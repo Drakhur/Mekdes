@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/renderers/CSS3DRenderer.min.js"></script>
+</head>
+<body>
+  <div class="birthday-container">
+    <h1 class="title">🎉 Happy Birthday, karthik! 🎉</h1>
+    <canvas id="fireworks-canvas"></canvas>
+    <div id="balloons"></div>
+    <div id="floating-images">
+      <img src="https://source.unsplash.com/random/100x100?cake" alt="cake" class="float-img" />
+      <img src="https://source.unsplash.com/random/100x100?gift" alt="gift" class="float-img" />
+      <img src="https://source.unsplash.com/random/100x100?party" alt="party" class="float-img" />
+    </div>
+  </div>
+
+  <script>
+    // Balloons API simulation
+    function spawnBalloons() {
+      const balloonContainer = document.getElementById('balloons');
+      for (let i = 0; i < 15; i++) {
+        const balloon = document.createElement('img');
+        balloon.src = `https://api.dicebear.com/7.x/icons/svg?seed=balloon-${i}`;
+        balloon.className = 'balloon';
+        balloon.style.left = Math.random() * 100 + 'vw';
+        balloon.style.animationDuration = 5 + Math.random() * 5 + 's';
+        balloonContainer.appendChild(balloon);
+      }
+    }
+    spawnBalloons();
+
+    // Fireworks simulation (simple canvas burst)
+    const canvas = document.getElementById('fireworks-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fireworks = [];
+
+    class Firework {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.radius = 2 + Math.random() * 2;
+        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+        this.speedY = -Math.random() * 7 - 5;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+      update() {
+        this.y += this.speedY;
+        this.radius *= 0.98;
+        this.speedY *= 0.98;
+      }
+    }
+
+    function animateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+      fireworks.forEach((f, i) => {
+        f.update();
+        f.draw();
+        if (f.radius < 0.5) fireworks.splice(i, 1);
+      });
+      requestAnimationFrame(animateFireworks);
+    }
+    animateFireworks();
+  </script>
+</body>
+</html>
